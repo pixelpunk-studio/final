@@ -74,6 +74,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
                 placeholder="admin@pixelpunk.studio"
                 required
                 aria-label="Email address"
+                autoComplete="email"
               />
             </div>
           </div>
