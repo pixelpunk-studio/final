@@ -17,7 +17,6 @@
   for = "/*"
   [headers.values]
     # Allow images and iframes from Google Drive/Googleusercontent. Adjust if you add stricter origins.
-    Content-Security-Policy = "default-src 'self'; img-src 'self' data: https://drive.google.com https://*.googleusercontent.com; media-src 'self' https://drive.google.com https://*.googleusercontent.com; frame-src https://drive.google.com; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' data:; base-uri 'self'; form-action 'self'"
-
-
+    # Allow Google Fonts and Firebase Identity Toolkit (auth) requests.
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data: https://drive.google.com https://*.googleusercontent.com; media-src 'self' https://drive.google.com https://*.googleusercontent.com; frame-src https://drive.google.com; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://identitytoolkit.googleapis.com https://www.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'; form-action 'self'"
 
