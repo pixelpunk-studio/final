@@ -36,11 +36,42 @@ function isDriveUrl(url?: string): boolean {
   return /(^https?:\/\/)?(drive\.google\.com|docs\.google\.com)/i.test(url);
 }
 
+function driveThumbnailUrl(id: string, size: number = 1600): string {
+  // Returns image/jpeg with no HTML wrapper
+  return `https://drive.google.com/thumbnail?id=${id}&sz=w${size}`;
+}
+
+function driveUcViewUrl(id: string): string {
+  return `https://drive.google.com/uc?export=view&id=${id}`;
+}
+
+function driveLh3Url(id: string, size: number = 1600): string {
+  // Undocumented but commonly used image CDN path
+  return `https://lh3.googleusercontent.com/d/${id}=w${size}`;
+}
+
 function normalizeDriveImageUrl(url?: string): string | undefined {
   if (!url) return url;
   if (!isDriveUrl(url)) return url;
   const id = extractDriveFileId(url);
-  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
+  return id ? driveThumbnailUrl(id) : url;
+}
+
+function handleDriveImageError(e: React.SyntheticEvent<HTMLImageElement, Event>, originalUrl?: string) {
+  const img = e.currentTarget;
+  const attempt = Number(img.dataset.attempt || 0);
+  const id = originalUrl ? extractDriveFileId(originalUrl) : null;
+  if (!id) return;
+  if (attempt === 0) {
+    img.dataset.attempt = "1";
+    img.src = driveUcViewUrl(id);
+  } else if (attempt === 1) {
+    img.dataset.attempt = "2";
+    img.src = driveLh3Url(id);
+  } else {
+    // Give up after two fallbacks
+    img.onerror = null;
+  }
 }
 
 function normalizeDriveVideoIframeSrc(url?: string): string | undefined {
@@ -137,6 +168,7 @@ export default function Portfolio() {
                     alt={item.title}
                     loading="lazy"
                     onLoad={() => handleImageLoad(item.id)}
+                    onError={(e) => handleDriveImageError(e, item.imageUrl)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-all duration-300 flex items-center justify-center">
@@ -195,6 +227,7 @@ export default function Portfolio() {
               <img
                 src={normalizeDriveImageUrl(selectedItem.imageUrl)}
                 alt={selectedItem.title}
+                onError={(e) => handleDriveImageError(e, selectedItem.imageUrl)}
                 className="w-full h-auto max-h-[90vh] object-contain"
               />
             ) : isDriveUrl(selectedItem.videoUrl) ? (
