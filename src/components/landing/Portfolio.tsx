@@ -12,6 +12,44 @@ interface PortfolioItem {
   order: number;
 }
 
+// Normalizes Google Drive URLs for reliable embedding
+function extractDriveFileId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    // Match /file/d/{id}/...
+    const parts = u.pathname.split("/");
+    const fileIndex = parts.indexOf("d");
+    if (parts.includes("file") && fileIndex !== -1 && parts[fileIndex + 1]) {
+      return parts[fileIndex + 1];
+    }
+    // Match id param
+    const idParam = u.searchParams.get("id");
+    if (idParam) return idParam;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function isDriveUrl(url?: string): boolean {
+  if (!url) return false;
+  return /(^https?:\/\/)?(drive\.google\.com|docs\.google\.com)/i.test(url);
+}
+
+function normalizeDriveImageUrl(url?: string): string | undefined {
+  if (!url) return url;
+  if (!isDriveUrl(url)) return url;
+  const id = extractDriveFileId(url);
+  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
+}
+
+function normalizeDriveVideoIframeSrc(url?: string): string | undefined {
+  if (!url) return url;
+  if (!isDriveUrl(url)) return url;
+  const id = extractDriveFileId(url);
+  return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+}
+
 export default function Portfolio() {
   const [graphics, setGraphics] = useState<PortfolioItem[]>([]);
   const [videos, setVideos] = useState<PortfolioItem[]>([]);
@@ -95,7 +133,7 @@ export default function Portfolio() {
                     <div className="absolute inset-0 bg-gray-100 animate-pulse" />
                   )}
                   <img
-                    src={item.imageUrl}
+                    src={normalizeDriveImageUrl(item.imageUrl)}
                     alt={item.title}
                     loading="lazy"
                     onLoad={() => handleImageLoad(item.id)}
@@ -155,9 +193,19 @@ export default function Portfolio() {
           <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
             {selectedItem.type === "graphic" ? (
               <img
-                src={selectedItem.imageUrl}
+                src={normalizeDriveImageUrl(selectedItem.imageUrl)}
                 alt={selectedItem.title}
                 className="w-full h-auto max-h-[90vh] object-contain"
+              />
+            ) : isDriveUrl(selectedItem.videoUrl) ? (
+              <iframe
+                src={normalizeDriveVideoIframeSrc(selectedItem.videoUrl)}
+                width="1280"
+                height="720"
+                allow="autoplay"
+                allowFullScreen
+                className="w-full h-auto max-h-[90vh]"
+                title={selectedItem.title}
               />
             ) : (
               <video
