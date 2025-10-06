@@ -57,6 +57,7 @@ export default function Login({ onForgotPassword }: LoginProps) {
                 placeholder="admin@pixelpunk.studio"
                 required
                 aria-label="Email address"
+                autoComplete="email"
               />
             </div>
           </div>
@@ -76,6 +77,7 @@ export default function Login({ onForgotPassword }: LoginProps) {
                 placeholder="••••••••"
                 required
                 aria-label="Password"
+                autoComplete="current-password"
               />
             </div>
           </div>
