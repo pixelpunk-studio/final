@@ -231,25 +231,27 @@ export default function Portfolio() {
                 className="w-full h-auto max-h-[90vh] object-contain"
               />
             ) : isDriveUrl(selectedItem.videoUrl) ? (
-              <iframe
-                src={normalizeDriveVideoIframeSrc(selectedItem.videoUrl)}
-                width="1280"
-                height="720"
-                allow="autoplay"
-                allowFullScreen
-                className="w-full h-auto max-h-[90vh]"
-                title={selectedItem.title}
-              />
+              <div className="w-full aspect-video max-h-[90vh]">
+                <iframe
+                  src={normalizeDriveVideoIframeSrc(selectedItem.videoUrl)}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                  title={selectedItem.title}
+                />
+              </div>
             ) : (
-              <video
-                src={selectedItem.videoUrl}
-                controls
-                autoPlay
-                className="w-full h-auto max-h-[90vh]"
-                aria-label={selectedItem.title}
-              >
-                Your browser does not support the video tag.
-              </video>
+              <div className="w-full aspect-video max-h-[90vh]">
+                <video
+                  src={selectedItem.videoUrl}
+                  controls
+                  autoPlay
+                  className="w-full h-full object-contain"
+                  aria-label={selectedItem.title}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
             )}
           </div>
         </div>
