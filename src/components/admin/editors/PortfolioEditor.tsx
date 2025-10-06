@@ -30,11 +30,15 @@ function extractDriveFileId(url: string): string | null {
   }
 }
 
+function driveThumbnailUrl(id: string, size: number = 800): string {
+  return `https://drive.google.com/thumbnail?id=${id}&sz=w${size}`;
+}
+
 function normalizeDriveImageUrl(url?: string): string | undefined {
   if (!url) return url;
   if (!/(^https?:\/\/)?(drive\.google\.com|docs\.google\.com)/i.test(url)) return url;
   const id = extractDriveFileId(url);
-  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
+  return id ? driveThumbnailUrl(id) : url;
 }
 
 export default function PortfolioEditor() {
