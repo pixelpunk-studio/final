@@ -14,6 +14,29 @@ interface PortfolioItem {
   order: number;
 }
 
+function extractDriveFileId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split("/");
+    const fileIndex = parts.indexOf("d");
+    if (parts.includes("file") && fileIndex !== -1 && parts[fileIndex + 1]) {
+      return parts[fileIndex + 1];
+    }
+    const idParam = u.searchParams.get("id");
+    if (idParam) return idParam;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeDriveImageUrl(url?: string): string | undefined {
+  if (!url) return url;
+  if (!/(^https?:\/\/)?(drive\.google\.com|docs\.google\.com)/i.test(url)) return url;
+  const id = extractDriveFileId(url);
+  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
+}
+
 export default function PortfolioEditor() {
   const [graphics, setGraphics] = useState<PortfolioItem[]>([]);
   const [videos, setVideos] = useState<PortfolioItem[]>([]);
@@ -202,7 +225,7 @@ export default function PortfolioEditor() {
           {(activeType === "graphic" ? graphics : videos).slice(0, 3).map((item) => (
             <div key={item.id} className="rounded-2xl overflow-hidden border border-gray-200">
               {activeType === "graphic" ? (
-                <img src={item.imageUrl} alt={item.title} className="w-full aspect-square object-cover" />
+                <img src={normalizeDriveImageUrl(item.imageUrl)} alt={item.title} className="w-full aspect-square object-cover" />
               ) : (
                 <div className="aspect-video bg-gray-100 flex items-center justify-center">
                   <p className="font-medium">{item.title}</p>
