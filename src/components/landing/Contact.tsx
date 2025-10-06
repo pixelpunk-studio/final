@@ -88,6 +88,7 @@ export default function Contact() {
                 required
                 maxLength={100}
                 aria-label="Your name"
+                autoComplete="name"
               />
             </div>
           </div>
@@ -106,6 +107,7 @@ export default function Contact() {
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-black transition-colors"
                 required
                 aria-label="Your email"
+                autoComplete="email"
               />
             </div>
           </div>
@@ -124,6 +126,7 @@ export default function Contact() {
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-black transition-colors"
                 required
                 aria-label="Your phone number"
+                autoComplete="tel"
               />
             </div>
           </div>
@@ -143,6 +146,7 @@ export default function Contact() {
                 required
                 maxLength={1000}
                 aria-label="Your message"
+                autoComplete="off"
               />
             </div>
           </div>
